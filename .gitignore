@@ -1,3 +1,5 @@
 outline.txt
 *.log
 .claude/
+gcp-oauth.keys.json
+*.keys.json
