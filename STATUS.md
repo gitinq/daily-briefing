@@ -1,7 +1,7 @@
 # Status — Daily Briefing
 
 **Last updated:** 2026-04-16
-**Status:** Scheduled run failing — MCP tools not yet configured (see [issue #1](https://github.com/gitinq/daily-briefing/issues/1))
+**Status:** Live and working — manual test confirmed 11:22 on 2026-04-16
 
 ## What this is
 
@@ -50,8 +50,6 @@ Runs in the `nas-claude` Docker container on MiniPC01 (192.168.0.6).
 See [nas-claude issue #1](https://github.com/gitinq/nas-claude/issues/1) for full setup steps.
 
 ## Known maintenance items
-
-- **MCP setup**: Not yet complete — see above and [daily-briefing issue #1](https://github.com/gitinq/daily-briefing/issues/1).
 - **Auth token expiry**: When claude.ai session expires, copy fresh `~/.claude/.credentials.json` from Windows to `/mnt/apps_pool/docker_apps/opt/nas-claude/claude-data/` on NAS.
 - **Container rebuild**: Required for changes to `nas-claude` repo (not this repo). `git pull` + `docker compose build && docker compose up -d`.
 - **Prompt updates**: `git pull` in `/mnt/apps_pool/docker_apps/opt/nas-claude/tasks/daily-briefing/` — takes effect on next run.
