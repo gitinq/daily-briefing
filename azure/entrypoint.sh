@@ -57,23 +57,24 @@ TMPFILE=$(mktemp /tmp/briefing_XXXXXX.md)
 cp "${PROMPT_FILE}" "${TMPFILE}"
 chmod 644 "${TMPFILE}"
 
-BRIEFING_TMPOUT=$(mktemp)
 su - briefing -c \
   "HOME=/home/briefing claude --dangerously-skip-permissions -p \"\$(cat '${TMPFILE}')\"" \
-  2>&1 | tee -a "${LOG_FILE}" | tee "${BRIEFING_TMPOUT}"
+  2>&1 | tee -a "${LOG_FILE}"
 
 rm -f "${TMPFILE}"
 
-# Persist output to File Share so /briefing page can display it (non-fatal)
+# Read the briefing text Claude wrote to the File Share (Step 5 of prompt)
+# and persist as JSON for the /briefing web page (non-fatal)
 {
+  BRIEFING_TEXT_FILE="/home/briefing/.claude/latest-briefing-text.txt"
   node -e "
 const fs = require('fs');
-const content = fs.readFileSync('${BRIEFING_TMPOUT}', 'utf8');
+const textFile = process.argv[1];
+const content = fs.existsSync(textFile) ? fs.readFileSync(textFile, 'utf8').trim() : '';
 const out = JSON.stringify({ date: new Date().toISOString(), content });
 fs.writeFileSync('/home/briefing/.claude/latest-briefing.json', out);
-console.log('[briefing] Saved ' + content.length + ' chars to latest-briefing.json');
-"
+console.log('[briefing] Saved briefing text (' + content.length + ' chars) to latest-briefing.json');
+" "${BRIEFING_TEXT_FILE}"
 } || echo "[$(date -Iseconds)] Warning: could not save latest-briefing.json (non-fatal)"
-rm -f "${BRIEFING_TMPOUT}"
 
 echo "[$(date -Iseconds)] Task complete: ${TASK}"

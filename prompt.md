@@ -163,3 +163,13 @@ _Filtered out X automated/marketing emails_
 
 
 Keep it brief and scannable — Paul reads this at the start of his workday to get up to speed quickly.
+
+
+
+## Step 5 — Save briefing text to file
+
+After sending to Slack, use bash to write the exact message text you sent (the full mrkdwn) to:
+
+`/home/briefing/.claude/latest-briefing-text.txt`
+
+Overwrite the file each run. This is used to display the briefing on the inqltd.uk/briefing/ page.
