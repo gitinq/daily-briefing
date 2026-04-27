@@ -57,8 +57,24 @@ TMPFILE=$(mktemp /tmp/briefing_XXXXXX.md)
 cp "${PROMPT_FILE}" "${TMPFILE}"
 chmod 644 "${TMPFILE}"
 
-su - briefing -c "HOME=/home/briefing claude --dangerously-skip-permissions -p \"\$(cat '${TMPFILE}')\"" \
-  2>&1 | tee -a "${LOG_FILE}"
+BRIEFING_OUT=$(su - briefing -c \
+  "HOME=/home/briefing claude --dangerously-skip-permissions -p \"\$(cat '${TMPFILE}')\"" \
+  2>&1 | tee -a "${LOG_FILE}")
 
 rm -f "${TMPFILE}"
+
+# Persist output to File Share so /briefing page can display it
+export _BRIEFING_OUT="${BRIEFING_OUT}"
+python3 - <<'PYEOF'
+import json, os, subprocess
+out = {
+    "date": subprocess.check_output(["date", "-Iseconds"]).decode().strip(),
+    "content": os.environ.get("_BRIEFING_OUT", "")
+}
+with open("/home/briefing/.claude/latest-briefing.json", "w") as f:
+    json.dump(out, f)
+print(f"[briefing] Saved {len(out['content'])} chars to latest-briefing.json")
+PYEOF
+unset _BRIEFING_OUT
+
 echo "[$(date -Iseconds)] Task complete: ${TASK}"
