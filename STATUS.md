@@ -1,7 +1,7 @@
 # Status — Daily Briefing
 
-**Last updated:** 2026-04-18
-**Status:** Live and working — scheduled run confirmed via supercronic 02:23 BST 2026-04-18
+**Last updated:** 2026-04-27
+**Status:** NAS setup potentially broken — ran Friday 2026-04-25, failed Monday 2026-04-28. Azure migration planned (see below). NAS teardown deferred — cleanup steps TBD.
 
 ## What this is
 
@@ -54,6 +54,36 @@ Local MCP servers configured at `/home/briefing/.claude/settings.json` on the NA
 - **Prompt updates**: `git pull` in `/mnt/apps_pool/docker_apps/opt/nas-claude/tasks/daily-briefing/` — takes effect on next run.
 - **nas-claude fix not pushed to GitHub**: The `HOME=/home/briefing` fix is committed locally on the NAS (`788cc89`) but not pushed. If the NAS repo is ever cloned fresh, re-apply this fix or push from the NAS.
 - **Healthcheck cosmetic failure**: `pgrep` not in image — container shows "unhealthy" but supercronic runs fine. Fix in future rebuild by replacing healthcheck with `/bin/sh -c "kill -0 1"` or similar.
+
+## Azure migration
+
+Architecture investigation completed 2026-04-27. Plan: move to Azure Container Apps Jobs (consumption plan) with schedule control via `/briefing/` page on the web repo. See conversation history for full breakdown.
+
+**Next steps before starting:**
+- [ ] Decide on NAS teardown approach (see section below)
+- [ ] Build modified Dockerfile (remove supercronic, run-and-exit entrypoint)
+- [ ] Provision Azure resources (`rg-briefing`, Container Apps Environment, two jobs)
+- [ ] Create Azure File Share, copy Claude credentials from NAS
+- [ ] Add `/briefing/` page + schedule API functions to web repo
+
+---
+
+## NAS teardown — PLANNING NEEDED
+
+> **Deferred.** NAS is inaccessible as of 2026-04-27. The `nas-claude` container may be broken (ran Fri 2026-04-25, failed Mon 2026-04-28). Teardown should be planned and documented here before executing.
+>
+> **Trigger phrase:** When Paul says **"NAS teardown"**, load this section and execute the documented steps (or plan them if steps are not yet written).
+>
+> **TODO:** Write the cleanup steps here covering:
+> - Stop and remove the `nas-claude` Docker container and image on MiniPC01
+> - Remove the `nas-claude` Docker Compose stack
+> - Archive or delete NAS paths: `/mnt/apps_pool/docker_apps/containers/nas-claude/` and `/mnt/apps_pool/docker_apps/opt/nas-claude/`
+> - Remove the `briefing` user and its home directory (if created on NAS host)
+> - Archive credentials from `claude-data/` volume before deletion (needed for Azure migration)
+> - Push the unpushed `HOME=/home/briefing` fix from the NAS to the `nas-claude` GitHub repo (or note it is abandoned)
+> - Note any other cleanup specific to TrueNAS / MiniPC01 setup
+
+---
 
 ## Verification
 
