@@ -57,24 +57,23 @@ TMPFILE=$(mktemp /tmp/briefing_XXXXXX.md)
 cp "${PROMPT_FILE}" "${TMPFILE}"
 chmod 644 "${TMPFILE}"
 
-BRIEFING_OUT=$(su - briefing -c \
+BRIEFING_TMPOUT=$(mktemp)
+su - briefing -c \
   "HOME=/home/briefing claude --dangerously-skip-permissions -p \"\$(cat '${TMPFILE}')\"" \
-  2>&1 | tee -a "${LOG_FILE}")
+  2>&1 | tee -a "${LOG_FILE}" | tee "${BRIEFING_TMPOUT}"
 
 rm -f "${TMPFILE}"
 
-# Persist output to File Share so /briefing page can display it
-export _BRIEFING_OUT="${BRIEFING_OUT}"
-python3 - <<'PYEOF'
-import json, os, subprocess
-out = {
-    "date": subprocess.check_output(["date", "-Iseconds"]).decode().strip(),
-    "content": os.environ.get("_BRIEFING_OUT", "")
-}
-with open("/home/briefing/.claude/latest-briefing.json", "w") as f:
-    json.dump(out, f)
-print(f"[briefing] Saved {len(out['content'])} chars to latest-briefing.json")
-PYEOF
-unset _BRIEFING_OUT
+# Persist output to File Share so /briefing page can display it (non-fatal)
+{
+  node -e "
+const fs = require('fs');
+const content = fs.readFileSync('${BRIEFING_TMPOUT}', 'utf8');
+const out = JSON.stringify({ date: new Date().toISOString(), content });
+fs.writeFileSync('/home/briefing/.claude/latest-briefing.json', out);
+console.log('[briefing] Saved ' + content.length + ' chars to latest-briefing.json');
+"
+} || echo "[$(date -Iseconds)] Warning: could not save latest-briefing.json (non-fatal)"
+rm -f "${BRIEFING_TMPOUT}"
 
 echo "[$(date -Iseconds)] Task complete: ${TASK}"
