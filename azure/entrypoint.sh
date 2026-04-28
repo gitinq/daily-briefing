@@ -71,6 +71,10 @@ rm -f "${TMPFILE}"
 const fs = require('fs');
 const textFile = process.argv[1];
 const content = fs.existsSync(textFile) ? fs.readFileSync(textFile, 'utf8').trim() : '';
+if (!content) {
+  console.log('[briefing] latest-briefing-text.txt not found or empty — skipping JSON update');
+  process.exit(0);
+}
 const out = JSON.stringify({ date: new Date().toISOString(), content });
 fs.writeFileSync('/home/briefing/.claude/latest-briefing.json', out);
 console.log('[briefing] Saved briefing text (' + content.length + ' chars) to latest-briefing.json');

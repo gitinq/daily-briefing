@@ -168,7 +168,7 @@ Keep it brief and scannable — Paul reads this at the start of his workday to g
 
 ## Step 5 — Save briefing text to file
 
-After sending to Slack, use bash to write the exact message text you sent (the full mrkdwn) to:
+After sending to Slack, use the Write tool to write the exact message text you sent (the full mrkdwn) to:
 
 `/home/briefing/.claude/latest-briefing-text.txt`
 
