@@ -1,7 +1,14 @@
 # Status — Daily Briefing
 
-**Last updated:** 2026-04-27
+**Last updated:** 2026-04-28
 **Status:** Live on Azure Container Apps Jobs
+
+## Known issues / recent fixes (2026-04-28)
+
+- Cloud MCP connectors (Gmail/Calendar/Slack) load intermittently at session startup — entrypoint now retries once after 30s if briefing txt file not written
+- Briefing txt file path changed from `/home/briefing/.claude/latest-briefing-text.txt` to `/home/briefing/latest-briefing-text.txt` — Claude Code blocks Write tool access to `.claude/` directory
+- Prompt Step 5 updated to use Write tool instead of bash (more reliable with multi-line mrkdwn)
+- entrypoint no longer overwrites `latest-briefing.json` with empty content if run produces nothing
 
 ## What this is
 
