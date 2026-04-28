@@ -56,7 +56,7 @@ echo "[$(date -Iseconds)] Auth OK. Starting ${TASK}..."
 TMPFILE=$(mktemp /tmp/briefing_XXXXXX.md)
 cp "${PROMPT_FILE}" "${TMPFILE}"
 chmod 644 "${TMPFILE}"
-BRIEFING_TEXT_FILE="/home/briefing/.claude/latest-briefing-text.txt"
+BRIEFING_TEXT_FILE="/home/briefing/latest-briefing-text.txt"
 
 run_claude() {
   # Clear the txt file before each attempt so we can tell if Claude wrote it

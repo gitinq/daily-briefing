@@ -170,6 +170,6 @@ Keep it brief and scannable — Paul reads this at the start of his workday to g
 
 After sending to Slack, use the Write tool to write the exact message text you sent (the full mrkdwn) to:
 
-`/home/briefing/.claude/latest-briefing-text.txt`
+`/home/briefing/latest-briefing-text.txt`
 
 Overwrite the file each run. This is used to display the briefing on the inqltd.uk/briefing/ page.
