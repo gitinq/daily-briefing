@@ -56,17 +56,31 @@ echo "[$(date -Iseconds)] Auth OK. Starting ${TASK}..."
 TMPFILE=$(mktemp /tmp/briefing_XXXXXX.md)
 cp "${PROMPT_FILE}" "${TMPFILE}"
 chmod 644 "${TMPFILE}"
+BRIEFING_TEXT_FILE="/home/briefing/.claude/latest-briefing-text.txt"
 
-su - briefing -c \
-  "HOME=/home/briefing claude --dangerously-skip-permissions -p \"\$(cat '${TMPFILE}')\"" \
-  2>&1 | tee -a "${LOG_FILE}"
+run_claude() {
+  # Clear the txt file before each attempt so we can tell if Claude wrote it
+  rm -f "${BRIEFING_TEXT_FILE}"
+  su - briefing -c \
+    "HOME=/home/briefing claude --dangerously-skip-permissions -p \"\$(cat '${TMPFILE}')\"" \
+    2>&1 | tee -a "${LOG_FILE}"
+}
+
+run_claude
+
+# If Claude exited 0 but didn't write the briefing text, MCP connectors likely
+# failed to load at session startup (known intermittent issue). Retry once.
+if [ ! -s "${BRIEFING_TEXT_FILE}" ]; then
+  echo "[$(date -Iseconds)] Briefing text not written — MCP connectors may have failed to load. Retrying in 30s..."
+  sleep 30
+  run_claude
+fi
 
 rm -f "${TMPFILE}"
 
 # Read the briefing text Claude wrote to the File Share (Step 5 of prompt)
 # and persist as JSON for the /briefing web page (non-fatal)
 {
-  BRIEFING_TEXT_FILE="/home/briefing/.claude/latest-briefing-text.txt"
   node -e "
 const fs = require('fs');
 const textFile = process.argv[1];
