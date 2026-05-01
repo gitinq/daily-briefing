@@ -66,11 +66,11 @@ Also add to `azure/provision.sh` YAML template so reprovisioning includes it.
 
 ### Checklist
 
-- [ ] web #31 implemented and `BRIEFING_API_KEY` SWA app setting set
-- [ ] Generate `BRIEFING_API_KEY` value (random 32+ char string)
+- [x] web #31 implemented and `BRIEFING_API_KEY` SWA app setting set (2026-05-01)
+- [x] Generate `BRIEFING_API_KEY` value — done (2026-05-01)
+- [x] Add Step 1b to `prompt.md` (2026-05-01)
 - [ ] Set `BRIEFING_API_KEY` on all 5 active ACA Jobs
 - [ ] Add `BRIEFING_API_KEY` env var to YAML template in `provision.sh`
-- [ ] Add Step 1b to `prompt.md`
 - [ ] Trigger a manual run and verify notes appear in briefing output
 - [ ] Update STATUS.md
 
@@ -103,7 +103,7 @@ After identifying emails that need attention, for each one:
 
 ### Checklist
 
-- [ ] Add label-check instructions to Step 2 of `prompt.md`
+- [x] Add label-check instructions to Step 2 of `prompt.md` (2026-05-01)
 - [ ] Trigger a manual run (with a test email labelled "Done") and verify behaviour
 - [ ] Update STATUS.md
 

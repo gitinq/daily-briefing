@@ -12,6 +12,22 @@ Use bash to check today's day: `date +%A`
 
 
 
+## Step 1b — Fetch briefing notes
+
+Run bash: `curl -sf -H "X-Briefing-Key: $BRIEFING_API_KEY" https://inqltd.uk/api/briefing-notes`
+
+If the call fails or returns an error, continue without notes — do not abort.
+
+Parse the JSON response. The `entries` array contains two types:
+- `keep_longterm: true` — Pinned standing context (e.g. "Acme invoices always take 30 days to pay", "Broadband fault ongoing with ISP")
+- `keep_longterm: false` — Recent daily notes (last 5 days)
+
+Apply throughout the briefing:
+- **Longterm notes**: treat as background context. If an email or task matches a topic in a longterm note, reference the note when describing priority or required action.
+- **Recent notes**: if a note says an item was resolved, replied to, paid, or dealt with — de-prioritise or omit the matching email from *Emails Needing Attention*. Mention briefly in *FYI* if still worth noting: `[Sender] — already handled per your note [date]`
+
+
+
 ## Step 2 — Read Gmail
 
 Use the Gmail search_threads tool with the appropriate query.
@@ -27,6 +43,21 @@ IGNORE completely (do not mention in briefing):
 - Shopping/retail deals and offers (e.g. carwow deals, Amazon promotions)
 
 - Subscription services and general app notifications
+
+
+
+For each email you identify as needing attention, call get_thread with the thread ID and check
+its labels. Apply these rules:
+
+- If a **resolution label** is present (case-insensitive: `Paid`, `Done`, `Replied`, `Actioned`,
+  `Resolved`, `No Action Needed`, or any label containing those words):
+  → Remove from *Emails Needing Attention*
+  → Add to *FYI*: `[Sender] — [subject] (marked: [label])`
+
+- If an **escalation label** is present (`Action Required`, `Follow Up`, `Urgent`, `Priority`):
+  → Elevate priority regardless of whether the sender is automated
+
+Only call get_thread for threads already identified as important — do not fetch all threads.
 
 
 
