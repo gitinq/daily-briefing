@@ -10,8 +10,8 @@ Live on Azure Container Apps Jobs. Prompt-only changes take effect immediately o
 
 | Issue | Title | Status |
 |---|---|---|
-| [#2](https://github.com/gitinq/daily-briefing/issues/2) | Include briefing notes in morning briefing context | Backlog |
-| [#3](https://github.com/gitinq/daily-briefing/issues/3) | Check Gmail labels on flagged emails to identify resolved items | Backlog |
+| [#2](https://github.com/gitinq/daily-briefing/issues/2) | Include briefing notes in morning briefing context | Pending TEST |
+| [#3](https://github.com/gitinq/daily-briefing/issues/3) | Check Gmail labels on flagged emails to identify resolved items | Pending TEST |
 
 ---
 
