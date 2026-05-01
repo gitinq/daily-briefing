@@ -69,8 +69,8 @@ Also add to `azure/provision.sh` YAML template so reprovisioning includes it.
 - [x] web #31 implemented and `BRIEFING_API_KEY` SWA app setting set (2026-05-01)
 - [x] Generate `BRIEFING_API_KEY` value — done (2026-05-01)
 - [x] Add Step 1b to `prompt.md` (2026-05-01)
-- [ ] Set `BRIEFING_API_KEY` on all 5 active ACA Jobs
-- [ ] Add `BRIEFING_API_KEY` env var to YAML template in `provision.sh`
+- [x] Set `BRIEFING_API_KEY` on all 7 ACA Jobs (2026-05-01)
+- [x] Add `BRIEFING_API_KEY` env var to YAML template in `provision.sh` (2026-05-01)
 - [ ] Trigger a manual run and verify notes appear in briefing output
 - [ ] Update STATUS.md
 

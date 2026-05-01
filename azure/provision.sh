@@ -32,6 +32,11 @@ CRON_FRIDAY="0 6 * * 5"
 # Optional: GitHub PAT for private ghcr.io image (leave empty if image is public)
 GHCR_PAT="${GHCR_PAT:-}"
 
+# API key for automated briefing runner to read notes from /api/briefing-notes
+# Must match the BRIEFING_API_KEY SWA app setting on inqltd-web.
+# Set before running: export BRIEFING_API_KEY=<value>
+BRIEFING_API_KEY="${BRIEFING_API_KEY:-}"
+
 # ── Set subscription ──────────────────────────────────────────────────────────
 echo "Setting subscription to $SUBSCRIPTION..."
 az account set --subscription "$SUBSCRIPTION"
@@ -103,6 +108,13 @@ create_job() {
     REGISTRY_SECTION=""
   fi
 
+  ENV_VARS=""
+  if [ -n "$BRIEFING_API_KEY" ]; then
+    ENV_VARS="        env:
+          - name: BRIEFING_API_KEY
+            value: \"${BRIEFING_API_KEY}\""
+  fi
+
   cat > "$YAML_FILE" <<YAML
 properties:
   environmentId: ${ACE_ID}
@@ -122,6 +134,7 @@ ${REGISTRY_SECTION}
         resources:
           cpu: 0.5
           memory: 1Gi
+${ENV_VARS}
         volumeMounts:
           - volumeName: claude-data
             mountPath: /home/briefing/.claude
