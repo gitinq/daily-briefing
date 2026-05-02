@@ -57,6 +57,7 @@ TMPFILE=$(mktemp /tmp/briefing_XXXXXX.md)
 cp "${PROMPT_FILE}" "${TMPFILE}"
 chmod 644 "${TMPFILE}"
 BRIEFING_TEXT_FILE="/home/briefing/latest-briefing-text.txt"
+BRIEFING_DIAG_FILE="/home/briefing/latest-briefing-diag.json"
 
 run_claude() {
   # Clear the txt file before each attempt so we can tell if Claude wrote it
@@ -94,5 +95,20 @@ fs.writeFileSync('/home/briefing/.claude/latest-briefing.json', out);
 console.log('[briefing] Saved briefing text (' + content.length + ' chars) to latest-briefing.json');
 " "${BRIEFING_TEXT_FILE}"
 } || echo "[$(date -Iseconds)] Warning: could not save latest-briefing.json (non-fatal)"
+
+# Copy diagnostic JSON Claude wrote to the File Share (Step 5b of prompt)
+{
+  node -e "
+const fs = require('fs');
+const diagFile = process.argv[1];
+const content = fs.existsSync(diagFile) ? fs.readFileSync(diagFile, 'utf8').trim() : '';
+if (!content) {
+  console.log('[briefing] latest-briefing-diag.json not found or empty — skipping');
+  process.exit(0);
+}
+fs.writeFileSync('/home/briefing/.claude/latest-briefing-diag.json', content);
+console.log('[briefing] Saved diagnostic log (' + content.length + ' chars) to latest-briefing-diag.json');
+" "${BRIEFING_DIAG_FILE}"
+} || echo "[$(date -Iseconds)] Warning: could not save latest-briefing-diag.json (non-fatal)"
 
 echo "[$(date -Iseconds)] Task complete: ${TASK}"

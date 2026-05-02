@@ -26,6 +26,10 @@ Apply throughout the briefing:
 - **Longterm notes**: treat as background context. If an email or task matches a topic in a longterm note, reference the note when describing priority or required action.
 - **Recent notes**: if a note says an item was resolved, replied to, paid, or dealt with — de-prioritise or omit the matching email from *Emails Needing Attention*. Mention briefly in *FYI* if still worth noting: `[Sender] — already handled per your note [date]`
 
+Track for Step 5b diagnostics:
+- `diag_notes_fetch_ok`: true if curl returned valid JSON, false if it failed or errored
+- `diag_notes_entries`: the full entries array (or [] if fetch failed)
+
 
 
 ## Step 2 — Read Gmail
@@ -58,6 +62,10 @@ its labels. Apply these rules:
   → Elevate priority regardless of whether the sender is automated
 
 Only call get_thread for threads already identified as important — do not fetch all threads.
+
+Track for Step 5b diagnostics:
+- `diag_label_checks`: for each get_thread call, record `{ sender, subject, labels_found: [...], action: "kept" | "moved to FYI" | "elevated" | "no relevant labels" }`
+- `diag_note_decisions`: for each email whose treatment was influenced by a note, record `{ sender, subject, note_date, note_excerpt: "<first 100 chars of matched note>", action: "omitted" | "de-prioritised to FYI" | "context added" }`
 
 
 
@@ -190,6 +198,7 @@ Only notable/one-off events from days 3–14. Format as:
 *🗑️ Filtered*
 
 _Filtered out X automated/marketing emails_
+_Notes: X entries (X longterm, X recent) [or: Notes fetch failed] · Labels checked on X threads · X note-based decisions_
 
 
 
@@ -204,3 +213,32 @@ After sending to Slack, use the Write tool to write the exact message text you s
 `/home/briefing/latest-briefing-text.txt`
 
 Overwrite the file each run. This is used to display the briefing on the inqltd.uk/briefing/ page.
+
+
+
+## Step 5b — Write diagnostic log
+
+Use the Write tool to write a JSON file to `/home/briefing/latest-briefing-diag.json`. Overwrite each run.
+
+The file should contain a single JSON object:
+
+```json
+{
+  "date": "<ISO 8601 timestamp of this run>",
+  "notes_fetch_ok": <true or false>,
+  "notes_entries": {
+    "total": <count>,
+    "longterm": <count of entries with keep_longterm: true>,
+    "recent": <count of entries with keep_longterm: false>,
+    "content": <full entries array from API, or []>
+  },
+  "label_checks": [
+    { "sender": "...", "subject": "...", "labels": [...], "action": "..." }
+  ],
+  "note_decisions": [
+    { "sender": "...", "subject": "...", "note_date": "...", "note_excerpt": "...", "action": "..." }
+  ]
+}
+```
+
+This file is read by the entrypoint for diagnostics — it is not shown to Paul.
