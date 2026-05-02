@@ -1,14 +1,20 @@
 # Status — Daily Briefing
 
-**Last updated:** 2026-05-01
+**Last updated:** 2026-05-02
 **Status:** Live on Azure Container Apps Jobs
+
+## Recent changes (2026-05-02)
+
+- **Diagnostic layer added**: each run writes `latest-briefing-diag.json` to the `stbriefing57752 / briefing-data` file share (Step 5b in prompt, handled by entrypoint). Fields: `notes_fetch_ok`, `notes_entries`, `label_checks`, `note_decisions`. Slack Filtered section shows a one-liner summary.
+- **Bug fixed — `su -` stripping env vars (issue #4)**: `BRIEFING_API_KEY` was not reaching Claude because `su -` creates a login shell that resets the environment. Fixed by passing it explicitly in the `su -c` command string. Any future env var needed by Claude must be passed the same way.
+- **Verified working (2026-05-02 manual run)**: notes fetched, EON Solar correctly de-prioritised to FYI with "per yesterday's note" annotation. Issues #2 and #4 closed.
+- **Issue #3 (Gmail labels)**: label checking confirmed running (3 threads per run), but FYI-with-label-annotation path not yet tested. Pending a run with a labelled email.
 
 ## Recent changes (2026-05-01)
 
-- **Step 1b added to prompt**: fetches briefing notes from `https://inqltd.uk/api/briefing-notes` using `BRIEFING_API_KEY` env var. Longterm notes used as standing context; recent notes suppress already-resolved email items.
-- **Step 2 updated**: for emails needing attention, calls `get_thread` to check Gmail labels. Resolution labels (Paid, Done, Replied, etc.) move items to FYI. Escalation labels (Action Required, Urgent, etc.) elevate priority.
-- **`BRIEFING_API_KEY` env var**: set on all 7 ACA Jobs and added to `provision.sh` template. Must match `BRIEFING_API_KEY` SWA app setting on `inqltd-web`.
-- Pending TEST on next scheduled run — issues `#2` and `#3` remain open.
+- **Step 1b added to prompt**: fetches briefing notes from `https://inqltd.uk/api/briefing-notes` using `BRIEFING_API_KEY` env var.
+- **Step 2 updated**: for emails needing attention, calls `get_thread` to check Gmail labels. Resolution labels move items to FYI. Escalation labels elevate priority.
+- **`BRIEFING_API_KEY` env var**: set on all 7 ACA Jobs and added to `provision.sh` template.
 
 ## Known issues / recent fixes (2026-04-28)
 
