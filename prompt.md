@@ -220,11 +220,13 @@ Overwrite the file each run. This is used to display the briefing on the inqltd.
 
 Use the Write tool to write a JSON file to `/home/briefing/latest-briefing-diag.json`. Overwrite each run.
 
+First run bash: `date -Iseconds` to get the current timestamp for the `date` field.
+
 The file should contain a single JSON object:
 
 ```json
 {
-  "date": "<ISO 8601 timestamp of this run>",
+  "date": "<output of date -Iseconds>",
   "notes_fetch_ok": <true or false>,
   "notes_entries": {
     "total": <count>,

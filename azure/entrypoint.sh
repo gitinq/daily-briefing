@@ -60,10 +60,11 @@ BRIEFING_TEXT_FILE="/home/briefing/latest-briefing-text.txt"
 BRIEFING_DIAG_FILE="/home/briefing/latest-briefing-diag.json"
 
 run_claude() {
-  # Clear the txt file before each attempt so we can tell if Claude wrote it
-  rm -f "${BRIEFING_TEXT_FILE}"
+  # Clear output files before each attempt so we can tell if Claude wrote them
+  rm -f "${BRIEFING_TEXT_FILE}" "${BRIEFING_DIAG_FILE}"
+  # Pass BRIEFING_API_KEY explicitly — su - resets the environment (login shell)
   su - briefing -c \
-    "HOME=/home/briefing claude --dangerously-skip-permissions -p \"\$(cat '${TMPFILE}')\"" \
+    "HOME=/home/briefing BRIEFING_API_KEY='${BRIEFING_API_KEY}' claude --dangerously-skip-permissions -p \"\$(cat '${TMPFILE}')\"" \
     2>&1 | tee -a "${LOG_FILE}"
 }
 
